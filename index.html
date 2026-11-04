@@ -92,6 +92,14 @@ h1 { font-size: 28px; line-height: 1.2; margin: 18px 0 6px; text-wrap: balance; 
 .fallback { margin-top: 26px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
 .fallback textarea { width: 100%; min-height: 150px; font: 15px/1.4 ui-monospace, Menlo, Consolas, monospace; direction: ltr; border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: var(--bg); color: var(--ink); }
 .fallback button { font: inherit; font-weight: 600; margin-top: 8px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--accent); background: var(--card); color: var(--accent); cursor: pointer; }
+.next { margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 12px; display: grid; gap: 8px; }
+.next h3 { font-size: 17px; margin: 0; }
+.next .note { margin: 0; color: var(--muted); }
+.next a.go { display: block; text-align: center; text-decoration: none; font-weight: 700; padding: 12px; border-radius: 12px; background: var(--accent); color: #fff; }
+.next .dl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.next .dl a, .next .wd a { display: block; text-align: center; text-decoration: none; font-weight: 600; padding: 11px 8px; border-radius: 10px; border: 2px solid var(--accent); color: var(--accent); background: var(--card); }
+.next .wd { font-size: 14px; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.next .wd a { padding: 6px 10px; border-width: 1px; font-size: 14px; }
 .foot { color: var(--muted); font-size: 14px; margin-top: 18px; }
 @media (prefers-reduced-motion: no-preference) { .job { transition: box-shadow .15s, border-color .15s, opacity .15s; } }
 </style>
@@ -121,6 +129,8 @@ h1 { font-size: 28px; line-height: 1.2; margin: 18px 0 6px; text-wrap: balance; 
 </div>
 <script>
 const RYAN = "me@ryancamomile.com";
+const RESUME = "1MmMMbvUq1mfWvHylaaJr22UkUvs5vfWnN41nrLVtafY";
+const gdoc = (id, fmt) => "https://docs.google.com/document/d/" + id + "/export?format=" + fmt;
 const T = {
   en: {
     title: "Jobs for you, Abdul",
@@ -132,7 +142,8 @@ const T = {
     send: "Send my answers to Ryan", sent: "answered", of: "of",
     fallbackTitle: "If the button does not open your email, copy this and email it to Ryan at me@ryancamomile.com:",
     copy: "Copy my answers", copied: "Copied",
-    foot: "Ryan will check each job is still open before applying."
+    foot: "Ryan will check each job is still open before applying.",
+    next: "Next steps for this job", apply: "Apply here", letter: "Cover letter (PDF)", resume: "Resume (PDF)", word: "Word files:", wordL: "cover letter", wordR: "resume", ryanNote: "Ryan will apply for you. You can still look at your letter and resume.", meNote: "Open the apply link. Upload your resume and cover letter when it asks."
   },
   fa: {
     title: "کارها برای شما، برادر عبدالوهاب",
@@ -144,35 +155,36 @@ const T = {
     send: "جواب‌هایم را به رایان بفرست", sent: "جواب داده شده", of: "از",
     fallbackTitle: "اگر دکمه ایمیل تان را باز نکرد، این متن را کاپی کنید و به رایان ایمیل کنید: me@ryancamomile.com",
     copy: "کاپی جواب‌ها", copied: "کاپی شد",
-    foot: "رایان قبل از درخواست، چک می‌کند که کار هنوز باز است."
+    foot: "رایان قبل از درخواست، چک می‌کند که کار هنوز باز است.",
+    next: "قدم‌های بعدی برای این کار", apply: "اینجا درخواست بدهید", letter: "نامه‌ی درخواست (PDF)", resume: "رزومه (PDF)", word: "فایل‌های Word:", wordL: "نامه", wordR: "رزومه", ryanNote: "رایان برای شما درخواست می‌دهد. شما هم می‌توانید نامه و رزومه‌ی تان را ببینید.", meNote: "لینک درخواست را باز کنید. وقتی پرسید، رزومه و نامه‌ی تان را آپلود کنید."
   }
 };
 const JOBS = [
-  { id: "uta", co: "Utah Transit Authority (UTA)", url: "https://www.simplyhired.com/job/DY4gU0RNs_zn3t8RziWKmsEygx4Sb8BIehVgkPG_ieOhhlHWlXVfKA",
+  { id: "uta", doc: "1VWMYnrQi6shcTmRlQsEJPGrSiHPfFiQFLIo8oH3iIO8", co: "Utah Transit Authority (UTA)", url: "https://careers.rideuta.com/jobs/18383024-facilities-service-employee-orem",
     en: { title: "Grounds and Facilities Worker", place: "Orem", pay: "$22.42 to $27.42 per hour, goes up each year", hours: "4:00 AM to 12:30 PM. Friday and Saturday off", benefits: "Health, dental, vision, life insurance, retirement plan", why: "Uses your landscaping and sprinkler work. Very stable job.", flag: "Closes Wednesday, November 4 at 11:59 PM. Answer today!" },
     fa: { title: "کارگر حویلی و تأسیسات", place: "Orem", pay: "ساعتی ۲۲.۴۲ تا ۲۷.۴۲ دالر، هر سال زیاد می‌شود", hours: "۴ صبح تا ۱۲:۳۰ چاشت. جمعه و شنبه رخصت", benefits: "بیمه‌ی صحی، دندان، چشم، بیمه‌ی زندگی، پلان تقاعد", why: "از تجربه‌ی باغبانی و آبیاری شما استفاده می‌کند. کار خیلی ثابت.", flag: "آخرین روز: چهارشنبه ۴ نوامبر، ساعت ۱۱:۵۹ شب. امروز جواب بدهید!" } },
-  { id: "pgcity", co: "Pleasant Grove City", url: "https://pgcityutah.applicantpro.com/jobs/4262036",
+  { id: "pgcity", doc: "1HwqA13Qk0nW_RLWNw8uZFY4plQwLzzYewFAMZWyqhNY", co: "Pleasant Grove City", url: "https://pgcityutah.applicantpro.com/jobs/4262036",
     en: { title: "Parks Operator", place: "Pleasant Grove (your city)", pay: "$21.07 to $30.22 per hour", hours: "Full time", benefits: "Medical, dental, vision, life insurance, Utah retirement", why: "Landscaping, mowing, trees, and sprinklers in city parks. Close to home." },
     fa: { title: "کارمند پارک‌ها", place: "Pleasant Grove (شهر خودتان)", pay: "ساعتی ۲۱.۰۷ تا ۳۰.۲۲ دالر", hours: "تمام وقت", benefits: "بیمه‌ی صحی، دندان، چشم، بیمه‌ی زندگی، تقاعد یوتا", why: "باغبانی، چمن‌زنی، درختان و آبیاری در پارک‌های شهر. نزدیک خانه." } },
-  { id: "bb-forklift", co: "BetterBody Foods", url: "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4586634",
+  { id: "bb-forklift", doc: "1ggaHy4P1dmSr2m3AfsS2rIY1IBkYVJK13wAzyicT5rA", co: "BetterBody Foods", url: "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4586634",
     en: { title: "Forklift Operator", place: "Lindon", pay: "Not listed", hours: "Monday to Thursday, 10 hours. Day (5 AM to 3:30 PM) or night (3:20 PM to 1:50 AM, $1 more per hour)", benefits: "Medical, dental, vision, 401(k), 12 paid holidays", why: "Forklift work you already know. Friday to Sunday free." },
     fa: { title: "دریور فورک‌لیفت", place: "Lindon", pay: "نوشته نشده", hours: "دوشنبه تا پنجشنبه، ۱۰ ساعت. روز (۵ صبح تا ۳:۳۰ عصر) یا شب (۳:۲۰ عصر تا ۱:۵۰ شب، ساعتی ۱ دالر بیشتر)", benefits: "بیمه‌ی صحی، دندان، چشم، 401(k)، ۱۲ رخصتی با معاش", why: "کار فورک‌لیفت که شما بلد هستید. جمعه تا یکشنبه آزاد." } },
-  { id: "bb-qa", co: "BetterBody Foods", url: "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4573581",
+  { id: "bb-qa", doc: "1mKRhi8ymoy3XpPRwDibq3Xdzu-JHkebl-2TgGI-7L70", co: "BetterBody Foods", url: "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4573581",
     en: { title: "Quality Control Technician (night)", place: "Lindon", pay: "Not listed, plus quarterly bonus", hours: "Night shift, 10 hours", benefits: "Medical, dental, vision, 401(k), 12 paid holidays", why: "Check products for quality, like you inspect panels now." },
     fa: { title: "تکنیشن کنترول کیفیت (شب)", place: "Lindon", pay: "نوشته نشده، با بونس هر سه ماه", hours: "شیفت شب، ۱۰ ساعت", benefits: "بیمه‌ی صحی، دندان، چشم، 401(k)، ۱۲ رخصتی با معاش", why: "کیفیت محصولات را چک می‌کنید، مثل حالا که پنل‌ها را چک می‌کنید." } },
-  { id: "bfs-load", co: "Builders FirstSource", url: "https://careers.bldr.com/jobs/52756",
+  { id: "bfs-load", doc: "1Wn2RUfG7lgFC7jjpKZK2B_hyxumZ9rD7oFXNClY-pfs", co: "Builders FirstSource", url: "https://careers.bldr.com/jobs/52756",
     en: { title: "Load Builder (Yard and Warehouse)", place: "American Fork", pay: "Not listed", hours: "Full time", benefits: "Benefits for you and your family", why: "Forklift job loading building materials. Needs forklift certification (you have it)." },
     fa: { title: "بارگیر (حویلی و گدام)", place: "American Fork", pay: "نوشته نشده", hours: "تمام وقت", benefits: "بیمه و امتیازات برای شما و فامیل", why: "کار فورک‌لیفت، بار کردن مواد ساختمانی. سرتفیکت فورک‌لیفت لازم است (شما دارید)." } },
-  { id: "bfs-recv", co: "Builders FirstSource", url: "https://careers.bldr.com/jobs/53157",
+  { id: "bfs-recv", doc: "1se15X6iqg0YdzQ3RfbyWOSo02BF_q8Tywsyjq_JVqHM", co: "Builders FirstSource", url: "https://careers.bldr.com/jobs/53157",
     en: { title: "Receiver (Yard and Warehouse)", place: "American Fork", pay: "Not listed", hours: "Full time", benefits: "Benefits for you and your family", why: "Check deliveries for damage and missing items, then unload and store." },
     fa: { title: "تحویل‌گیرنده‌ی جنس (حویلی و گدام)", place: "American Fork", pay: "نوشته نشده", hours: "تمام وقت", benefits: "بیمه و امتیازات برای شما و فامیل", why: "جنس‌های رسیده را برای خرابی و کمبود چک می‌کنید، بعد خالی و جابجا می‌کنید." } },
-  { id: "interstate", co: "Interstate Gratings", url: "https://www.simplyhired.com/job/q6se7JT5lorbYtbSfKdBc9OUqCE97iEf3oaJWzXoauHmrhELkahkNA",
+  { id: "interstate", doc: "1-8XKiurvq7Cq05icb6npdfyHHW_h5NYbeAXH3qyu-iM", co: "Interstate Gratings", url: "https://www.simplyhired.com/job/q6se7JT5lorbYtbSfKdBc9OUqCE97iEf3oaJWzXoauHmrhELkahkNA",
     en: { title: "Shipping and Receiving Operator", place: "Lindon", pay: "$24.88 to $28.00 per hour", hours: "About 50 hours a week, Monday to Friday", benefits: "Ask when you apply", why: "Move steel and metal with a forklift. Highest pay on this list." },
     fa: { title: "کارمند ارسال و دریافت جنس", place: "Lindon", pay: "ساعتی ۲۴.۸۸ تا ۲۸ دالر", hours: "تقریباً ۵۰ ساعت در هفته، دوشنبه تا جمعه", benefits: "هنگام درخواست بپرسید", why: "فولاد و آهن را با فورک‌لیفت جابجا می‌کنید. بالاترین معاش در این لست." } },
-  { id: "church-dist", co: "The Church of Jesus Christ (Distribution)", url: "https://careers.churchofjesuschrist.org/en/sites/ChurchEmployment/job/378821",
+  { id: "church-dist", doc: "1GMDM494i8crdP1U9PEVZj93Cc-4OesVzbJ2eaeEcoH4", co: "The Church of Jesus Christ (Distribution)", url: "https://careers.churchofjesuschrist.org/en/sites/ChurchEmployment/job/378821",
     en: { title: "Warehouse Worker (swing shift)", place: "Salt Lake City (about 40 minutes drive)", pay: "Hourly, plus extra for swing shift", hours: "Monday to Thursday, 2:00 PM to 12:30 AM", benefits: "Church employee benefits", why: "Forklift and warehouse work for the Church. Must be worthy of a temple recommend.", flag: "Long drive. Only for Church members with a temple recommend." },
     fa: { title: "کارگر گدام (شیفت عصر)", place: "Salt Lake City (تقریباً ۴۰ دقیقه موتر)", pay: "ساعتی، با پول اضافه برای شیفت عصر", hours: "دوشنبه تا پنجشنبه، ۲ عصر تا ۱۲:۳۰ شب", benefits: "امتیازات کارمندان کلیسا", why: "کار فورک‌لیفت و گدام برای کلیسا. باید لایق توصیه‌نامه‌ی معبد باشید.", flag: "راه دور. فقط برای اعضای کلیسا با توصیه‌نامه‌ی معبد." } },
-  { id: "skysource", co: "SkySource Solutions (staffing company)", url: "https://www.simplyhired.com/job/LbpCzZzBIWYxAnefYUrjNAGq2KSecK4wGSiq1rt50_M2DuFRYbwYpQ",
+  { id: "skysource", doc: "1KDyvekJSyEdx4mmJ5lyqCY_ZphGCWL8y9vsHDwf0VSc", co: "SkySource Solutions (staffing company)", url: "https://www.simplyhired.com/job/LbpCzZzBIWYxAnefYUrjNAGq2KSecK4wGSiq1rt50_M2DuFRYbwYpQ",
     en: { title: "Forklift Operator / Material Handler", place: "Provo", pay: "$19.50 per hour, overtime available", hours: "Monday to Friday, 2:00 PM to 10:30 PM", benefits: "Ask when you apply", why: "Forklift work. This is through a staffing company, so it may be less stable." },
     fa: { title: "دریور فورک‌لیفت / کارگر مواد", place: "Provo", pay: "ساعتی ۱۹.۵۰ دالر، اضافه‌کاری هم است", hours: "دوشنبه تا جمعه، ۲ عصر تا ۱۰:۳۰ شب", benefits: "هنگام درخواست بپرسید", why: "کار فورک‌لیفت. از طریق یک شرکت کاریابی است، شاید کمتر ثابت باشد." } }
 ];
@@ -229,6 +241,21 @@ function render() {
         w.appendChild(b);
       });
       card.appendChild(w);
+      const nx = el("div", "next");
+      nx.appendChild(el("h3", null, t.next));
+      if (st.who) nx.appendChild(el("p", "note", st.who === "ryan" ? t.ryanNote : t.meNote));
+      const go = el("a", "go", t.apply); go.href = j.url; go.target = "_blank"; go.rel = "noopener"; nx.appendChild(go);
+      const dl = el("div", "dl");
+      [["letter", j.doc], ["resume", RESUME]].forEach(([k, id]) => {
+        const a = el("a", null, t[k]); a.href = gdoc(id, "pdf"); a.target = "_blank"; a.rel = "noopener"; dl.appendChild(a);
+      });
+      nx.appendChild(dl);
+      const wd = el("div", "wd"); wd.appendChild(el("span", null, t.word));
+      [[j.doc, t.wordL], [RESUME, t.wordR]].forEach(([id, label]) => {
+        const a = el("a", null, label); a.href = gdoc(id, "docx"); a.target = "_blank"; a.rel = "noopener"; wd.appendChild(a);
+      });
+      nx.appendChild(wd);
+      card.appendChild(nx);
     }
     list.appendChild(card);
   });
