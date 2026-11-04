@@ -277,7 +277,18 @@ document.getElementById("copy").onclick = async (e) => {
   try { await navigator.clipboard.writeText(ta.value); } catch (err) { ta.select(); try { document.execCommand("copy"); } catch (e2) {} }
   btn.textContent = T[lang].copied; setTimeout(() => { btn.textContent = T[lang].copy; }, 1800);
 };
-render();
+const EXPIRES = new Date("2026-11-17T23:59:00-07:00");
+if (new Date() > EXPIRES) {
+  document.body.textContent = "";
+  const w = el("div", "wrap");
+  w.appendChild(el("h1", null, "This job list has closed."));
+  w.appendChild(el("p", "intro", "Please email Ryan at me@ryancamomile.com for a new list."));
+  const fa = el("p", "intro", "این لست کار بسته شده است. برای لست جدید به رایان ایمیل کنید: me@ryancamomile.com"); fa.dir = "rtl"; fa.style.fontFamily = "var(--fa)";
+  w.appendChild(fa);
+  document.body.appendChild(w);
+} else {
+  render();
+}
 </script>
 </body>
 </html>
