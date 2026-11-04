@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Abdul's Job List</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: one column of job cards, big tap targets, sticky send bar at the bottom */
+:root {
+  --bg: #f3f5f2;
+  --card: #ffffff;
+  --ink: #1d2620;
+  --muted: #5b6760;
+  --line: #d9dfda;
+  --accent: #2f6b4f;
+  --accent-soft: #e2efe8;
+  --no: #8a3b2e;
+  --no-soft: #f6e6e2;
+  --warn: #9a5b00;
+  --warn-soft: #fff1d6;
+  --sans: "Source Sans 3", "Segoe UI", Roboto, Arial, sans-serif;
+  --fa: "Vazirmatn", Tahoma, "Segoe UI", Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121714; --card: #1b221e; --ink: #e8eee9; --muted: #a3b0a8; --line: #2d3832;
+    --accent: #6fbf95; --accent-soft: #1f3529; --no: #e39a8a; --no-soft: #3a2420;
+    --warn: #f0b85c; --warn-soft: #3a2d14; color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 17px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px));
+}
+body.fa { font-family: var(--fa); direction: rtl; }
+.wrap { max-width: 640px; margin: 0 auto; padding-top: 20px; }
+.langbar { display: flex; gap: 8px; justify-content: flex-end; }
+.langbar button {
+  font: inherit; font-size: 15px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line);
+  background: var(--card); color: var(--ink); cursor: pointer;
+}
+.langbar button[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+h1 { font-size: 28px; line-height: 1.2; margin: 18px 0 6px; text-wrap: balance; }
+.intro { color: var(--muted); margin: 0 0 6px; }
+.how { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin: 14px 0 18px; }
+.how ol { margin: 0; padding-inline-start: 22px; }
+.list { display: grid; gap: 14px; }
+.job { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+.job.yes { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.job.no { opacity: .72; }
+.num { font-size: 14px; font-weight: 700; color: var(--accent); letter-spacing: .04em; }
+.job h2 { font-size: 21px; margin: 2px 0 2px; line-height: 1.25; }
+.co { font-weight: 600; margin: 0; }
+.place { color: var(--muted); margin: 0 0 10px; }
+.facts { margin: 0 0 10px; padding: 0; list-style: none; display: grid; gap: 4px; }
+.facts li { display: flex; gap: 8px; }
+.facts b { min-width: 74px; color: var(--muted); font-weight: 600; }
+.why { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; margin: 0 0 10px; }
+.flag { background: var(--warn-soft); color: var(--warn); border-radius: 8px; padding: 8px 10px; margin: 0 0 10px; font-weight: 600; }
+.more { display: inline-block; margin-bottom: 12px; color: var(--accent); font-weight: 600; }
+.q { font-weight: 700; margin: 6px 0 8px; }
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.choices button {
+  font: inherit; font-weight: 700; font-size: 18px; min-height: 54px; border-radius: 12px; cursor: pointer;
+  border: 2px solid var(--line); background: var(--card); color: var(--ink);
+}
+.choices button:focus-visible, .langbar button:focus-visible, .send button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.choices .y[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.choices .n[aria-pressed="true"] { background: var(--no); border-color: var(--no); color: #fff; }
+.choices.who { margin-top: 10px; }
+.choices.who button { font-size: 16px; }
+.choices.who button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--ink); }
+.send {
+  position: fixed; left: 0; right: 0; bottom: 0; background: var(--card); border-top: 1px solid var(--line);
+  padding: 12px max(16px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
+.send .inner { max-width: 640px; margin: 0 auto; display: grid; gap: 6px; }
+.send a.btn {
+  display: block; text-align: center; text-decoration: none; font-weight: 700; font-size: 18px; padding: 14px;
+  border-radius: 12px; background: var(--accent); color: #fff;
+}
+.send .count { font-size: 14px; color: var(--muted); text-align: center; }
+.fallback { margin-top: 26px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+.fallback textarea { width: 100%; min-height: 150px; font: 15px/1.4 ui-monospace, Menlo, Consolas, monospace; direction: ltr; border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: var(--bg); color: var(--ink); }
+.fallback button { font: inherit; font-weight: 600; margin-top: 8px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--accent); background: var(--card); color: var(--accent); cursor: pointer; }
+.foot { color: var(--muted); font-size: 14px; margin-top: 18px; }
+@media (prefers-reduced-motion: no-preference) { .job { transition: box-shadow .15s, border-color .15s, opacity .15s; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="langbar" role="group" aria-label="Language">
+    <button type="button" id="btn-en" data-lang="en" aria-pressed="true">English</button>
+    <button type="button" id="btn-fa" data-lang="fa" aria-pressed="false">دری</button>
+  </div>
+  <h1 data-t="title"></h1>
+  <p class="intro" data-t="intro"></p>
+  <div class="how"><ol id="how"></ol></div>
+  <div class="list" id="list"></div>
+  <div class="fallback">
+    <p data-t="fallbackTitle"></p>
+    <textarea id="summary" readonly aria-label="Your answers"></textarea>
+    <button type="button" id="copy" data-t="copy"></button>
+  </div>
+  <p class="foot" data-t="foot"></p>
+</div>
+<div class="send">
+  <div class="inner">
+    <a class="btn" id="sendBtn" href="#" data-t="send"></a>
+    <div class="count" id="count"></div>
+  </div>
+</div>
+<script>
+const RYAN = "me@ryancamomile.com";
+const T = {
+  en: {
+    title: "Jobs for you, Abdul",
+    intro: "I found these jobs near Pleasant Grove. All are full time. Please look at each one.",
+    how: ["Tap Yes or No for each job.", "If Yes, choose: Ryan applies for me, or I apply myself.", "Tap the green button at the bottom to send your answers to Ryan."],
+    q1: "Do you want this job?", yes: "Yes", no: "No",
+    q2: "Who will apply?", ryan: "Ryan applies for me", me: "I apply myself",
+    pay: "Pay", hours: "Hours", benefits: "Benefits", more: "See the job post",
+    send: "Send my answers to Ryan", sent: "answered", of: "of",
+    fallbackTitle: "If the button does not open your email, copy this and email it to Ryan at me@ryancamomile.com:",
+    copy: "Copy my answers", copied: "Copied",
+    foot: "Ryan will check each job is still open before applying."
+  },
+  fa: {
+    title: "کارها برای شما، برادر عبدالوهاب",
+    intro: "این کارها را نزدیک پلیزنت گروو پیدا کردم. همه کار تمام وقت هستند. لطفاً هر کدام را ببینید.",
+    how: ["برای هر کار «بلی» یا «نخیر» را بزنید.", "اگر بلی: انتخاب کنید که رایان برای شما درخواست بدهد، یا خودتان درخواست بدهید.", "در آخر، دکمه‌ی سبز پایین را بزنید تا جواب‌های تان به رایان فرستاده شود."],
+    q1: "آیا این کار را می‌خواهید؟", yes: "بلی", no: "نخیر",
+    q2: "چه کسی درخواست بدهد؟", ryan: "رایان برایم درخواست بدهد", me: "خودم درخواست می‌دهم",
+    pay: "معاش", hours: "ساعت کار", benefits: "امتیازات", more: "اعلان کار را ببینید",
+    send: "جواب‌هایم را به رایان بفرست", sent: "جواب داده شده", of: "از",
+    fallbackTitle: "اگر دکمه ایمیل تان را باز نکرد، این متن را کاپی کنید و به رایان ایمیل کنید: me@ryancamomile.com",
+    copy: "کاپی جواب‌ها", copied: "کاپی شد",
+    foot: "رایان قبل از درخواست، چک می‌کند که کار هنوز باز است."
+  }
+};
+const JOBS = [
+  { id: "uta", co: "Utah Transit Authority (UTA)", url: "https://www.simplyhired.com/job/DY4gU0RNs_zn3t8RziWKmsEygx4Sb8BIehVgkPG_ieOhhlHWlXVfKA",
+    en: { title: "Grounds and Facilities Worker", place: "Orem", pay: "$22.42 to $27.42 per hour, goes up each year", hours: "4:00 AM to 12:30 PM. Friday and Saturday off", benefits: "Health, dental, vision, life insurance, retirement plan", why: "Uses your landscaping and sprinkler work. Very stable job.", flag: "Closes Wednesday, November 4 at 11:59 PM. Answer today!" },
+    fa: { title: "کارگر حویلی و تأسیسات", place: "Orem", pay: "ساعتی ۲۲.۴۲ تا ۲۷.۴۲ دالر، هر سال زیاد می‌شود", hours: "۴ صبح تا ۱۲:۳۰ چاشت. جمعه و شنبه رخصت", benefits: "بیمه‌ی صحی، دندان، چشم، بیمه‌ی زندگی، پلان تقاعد", why: "از تجربه‌ی باغبانی و آبیاری شما استفاده می‌کند. کار خیلی ثابت.", flag: "آخرین روز: چهارشنبه ۴ نوامبر، ساعت ۱۱:۵۹ شب. امروز جواب بدهید!" } },
+  { id: "pgcity", co: "Pleasant Grove City", url: "https://pgcityutah.applicantpro.com/jobs/4262036",
+    en: { title: "Parks Operator", place: "Pleasant Grove (your city)", pay: "$21.07 to $30.22 per hour", hours: "Full time", benefits: "Medical, dental, vision, life insurance, Utah retirement", why: "Landscaping, mowing, trees, and sprinklers in city parks. Close to home." },
+    fa: { title: "کارمند پارک‌ها", place: "Pleasant Grove (شهر خودتان)", pay: "ساعتی ۲۱.۰۷ تا ۳۰.۲۲ دالر", hours: "تمام وقت", benefits: "بیمه‌ی صحی، دندان، چشم، بیمه‌ی زندگی، تقاعد یوتا", why: "باغبانی، چمن‌زنی، درختان و آبیاری در پارک‌های شهر. نزدیک خانه." } },
+  { id: "bb-forklift", co: "BetterBody Foods", url: "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4586634",
+    en: { title: "Forklift Operator", place: "Lindon", pay: "Not listed", hours: "Monday to Thursday, 10 hours. Day (5 AM to 3:30 PM) or night (3:20 PM to 1:50 AM, $1 more per hour)", benefits: "Medical, dental, vision, 401(k), 12 paid holidays", why: "Forklift work you already know. Friday to Sunday free." },
+    fa: { title: "دریور فورک‌لیفت", place: "Lindon", pay: "نوشته نشده", hours: "دوشنبه تا پنجشنبه، ۱۰ ساعت. روز (۵ صبح تا ۳:۳۰ عصر) یا شب (۳:۲۰ عصر تا ۱:۵۰ شب، ساعتی ۱ دالر بیشتر)", benefits: "بیمه‌ی صحی، دندان، چشم، 401(k)، ۱۲ رخصتی با معاش", why: "کار فورک‌لیفت که شما بلد هستید. جمعه تا یکشنبه آزاد." } },
+  { id: "bb-qa", co: "BetterBody Foods", url: "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4573581",
+    en: { title: "Quality Control Technician (night)", place: "Lindon", pay: "Not listed, plus quarterly bonus", hours: "Night shift, 10 hours", benefits: "Medical, dental, vision, 401(k), 12 paid holidays", why: "Check products for quality, like you inspect panels now." },
+    fa: { title: "تکنیشن کنترول کیفیت (شب)", place: "Lindon", pay: "نوشته نشده، با بونس هر سه ماه", hours: "شیفت شب، ۱۰ ساعت", benefits: "بیمه‌ی صحی، دندان، چشم، 401(k)، ۱۲ رخصتی با معاش", why: "کیفیت محصولات را چک می‌کنید، مثل حالا که پنل‌ها را چک می‌کنید." } },
+  { id: "bfs-load", co: "Builders FirstSource", url: "https://careers.bldr.com/jobs/52756",
+    en: { title: "Load Builder (Yard and Warehouse)", place: "American Fork", pay: "Not listed", hours: "Full time", benefits: "Benefits for you and your family", why: "Forklift job loading building materials. Needs forklift certification (you have it)." },
+    fa: { title: "بارگیر (حویلی و گدام)", place: "American Fork", pay: "نوشته نشده", hours: "تمام وقت", benefits: "بیمه و امتیازات برای شما و فامیل", why: "کار فورک‌لیفت، بار کردن مواد ساختمانی. سرتفیکت فورک‌لیفت لازم است (شما دارید)." } },
+  { id: "bfs-recv", co: "Builders FirstSource", url: "https://careers.bldr.com/jobs/53157",
+    en: { title: "Receiver (Yard and Warehouse)", place: "American Fork", pay: "Not listed", hours: "Full time", benefits: "Benefits for you and your family", why: "Check deliveries for damage and missing items, then unload and store." },
+    fa: { title: "تحویل‌گیرنده‌ی جنس (حویلی و گدام)", place: "American Fork", pay: "نوشته نشده", hours: "تمام وقت", benefits: "بیمه و امتیازات برای شما و فامیل", why: "جنس‌های رسیده را برای خرابی و کمبود چک می‌کنید، بعد خالی و جابجا می‌کنید." } },
+  { id: "interstate", co: "Interstate Gratings", url: "https://www.simplyhired.com/job/q6se7JT5lorbYtbSfKdBc9OUqCE97iEf3oaJWzXoauHmrhELkahkNA",
+    en: { title: "Shipping and Receiving Operator", place: "Lindon", pay: "$24.88 to $28.00 per hour", hours: "About 50 hours a week, Monday to Friday", benefits: "Ask when you apply", why: "Move steel and metal with a forklift. Highest pay on this list." },
+    fa: { title: "کارمند ارسال و دریافت جنس", place: "Lindon", pay: "ساعتی ۲۴.۸۸ تا ۲۸ دالر", hours: "تقریباً ۵۰ ساعت در هفته، دوشنبه تا جمعه", benefits: "هنگام درخواست بپرسید", why: "فولاد و آهن را با فورک‌لیفت جابجا می‌کنید. بالاترین معاش در این لست." } },
+  { id: "church-dist", co: "The Church of Jesus Christ (Distribution)", url: "https://careers.churchofjesuschrist.org/en/sites/ChurchEmployment/job/378821",
+    en: { title: "Warehouse Worker (swing shift)", place: "Salt Lake City (about 40 minutes drive)", pay: "Hourly, plus extra for swing shift", hours: "Monday to Thursday, 2:00 PM to 12:30 AM", benefits: "Church employee benefits", why: "Forklift and warehouse work for the Church. Must be worthy of a temple recommend.", flag: "Long drive. Only for Church members with a temple recommend." },
+    fa: { title: "کارگر گدام (شیفت عصر)", place: "Salt Lake City (تقریباً ۴۰ دقیقه موتر)", pay: "ساعتی، با پول اضافه برای شیفت عصر", hours: "دوشنبه تا پنجشنبه، ۲ عصر تا ۱۲:۳۰ شب", benefits: "امتیازات کارمندان کلیسا", why: "کار فورک‌لیفت و گدام برای کلیسا. باید لایق توصیه‌نامه‌ی معبد باشید.", flag: "راه دور. فقط برای اعضای کلیسا با توصیه‌نامه‌ی معبد." } },
+  { id: "skysource", co: "SkySource Solutions (staffing company)", url: "https://www.simplyhired.com/job/LbpCzZzBIWYxAnefYUrjNAGq2KSecK4wGSiq1rt50_M2DuFRYbwYpQ",
+    en: { title: "Forklift Operator / Material Handler", place: "Provo", pay: "$19.50 per hour, overtime available", hours: "Monday to Friday, 2:00 PM to 10:30 PM", benefits: "Ask when you apply", why: "Forklift work. This is through a staffing company, so it may be less stable." },
+    fa: { title: "دریور فورک‌لیفت / کارگر مواد", place: "Provo", pay: "ساعتی ۱۹.۵۰ دالر، اضافه‌کاری هم است", hours: "دوشنبه تا جمعه، ۲ عصر تا ۱۰:۳۰ شب", benefits: "هنگام درخواست بپرسید", why: "کار فورک‌لیفت. از طریق یک شرکت کاریابی است، شاید کمتر ثابت باشد." } }
+];
+
+const KEY = "abdul-jobs-v1";
+let state = {}; let lang = "en";
+try { const s = JSON.parse(localStorage.getItem(KEY) || "{}"); state = s.state || {}; lang = s.lang || "en"; } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify({ state, lang })); } catch (e) {} }
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const faNum = (n) => String(n).replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]);
+
+function render() {
+  const t = T[lang];
+  document.documentElement.lang = lang === "fa" ? "fa" : "en";
+  document.body.classList.toggle("fa", lang === "fa");
+  document.querySelectorAll("[data-t]").forEach(n => { n.textContent = t[n.dataset.t]; });
+  document.querySelectorAll(".langbar button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  const how = document.getElementById("how"); how.textContent = "";
+  t.how.forEach(s => how.appendChild(el("li", null, s)));
+
+  const list = document.getElementById("list"); list.textContent = "";
+  JOBS.forEach((j, i) => {
+    const c = j[lang]; const st = state[j.id] || {};
+    const card = el("article", "job" + (st.want === "yes" ? " yes" : st.want === "no" ? " no" : ""));
+    card.appendChild(el("div", "num", (lang === "fa" ? "شماره‌ی " + faNum(i + 1) : "Job " + (i + 1))));
+    card.appendChild(el("h2", null, c.title));
+    card.appendChild(el("p", "co", j.co));
+    card.appendChild(el("p", "place", c.place));
+    if (c.flag) card.appendChild(el("p", "flag", c.flag));
+    const facts = el("ul", "facts");
+    [["pay", c.pay], ["hours", c.hours], ["benefits", c.benefits]].forEach(([k, v]) => {
+      const li = el("li"); li.appendChild(el("b", null, t[k])); li.appendChild(el("span", null, v)); facts.appendChild(li);
+    });
+    card.appendChild(facts);
+    card.appendChild(el("p", "why", c.why));
+    const a = el("a", "more", t.more); a.href = j.url; a.target = "_blank"; a.rel = "noopener"; card.appendChild(a);
+
+    card.appendChild(el("p", "q", t.q1));
+    const ch = el("div", "choices");
+    [["yes", "y", t.yes], ["no", "n", t.no]].forEach(([v, cls, label]) => {
+      const b = el("button", cls, label); b.type = "button"; b.id = j.id + "-" + v;
+      b.setAttribute("aria-pressed", String(st.want === v));
+      b.onclick = () => { state[j.id] = { want: v, who: v === "yes" ? st.who : undefined }; save(); render(); };
+      ch.appendChild(b);
+    });
+    card.appendChild(ch);
+    if (st.want === "yes") {
+      card.appendChild(el("p", "q", t.q2));
+      const w = el("div", "choices who");
+      [["ryan", t.ryan], ["me", t.me]].forEach(([v, label]) => {
+        const b = el("button", null, label); b.type = "button"; b.id = j.id + "-who-" + v;
+        b.setAttribute("aria-pressed", String(st.who === v));
+        b.onclick = () => { state[j.id] = { want: "yes", who: v }; save(); render(); };
+        w.appendChild(b);
+      });
+      card.appendChild(w);
+    }
+    list.appendChild(card);
+  });
+
+  const lines = JOBS.map((j, i) => {
+    const st = state[j.id] || {};
+    const ans = st.want === "yes" ? "YES, " + (st.who === "ryan" ? "Ryan applies for me" : st.who === "me" ? "I apply myself" : "(who applies? not chosen)") : st.want === "no" ? "NO" : "(no answer)";
+    return (i + 1) + ". " + j.en.title + " - " + j.co + ": " + ans;
+  });
+  const body = "Hi Ryan,\n\nHere are my answers:\n\n" + lines.join("\n") + "\n\nThank you,\nAbdul";
+  document.getElementById("summary").value = body;
+  document.getElementById("sendBtn").href = "mailto:" + RYAN + "?subject=" + encodeURIComponent("My job answers") + "&body=" + encodeURIComponent(body);
+  const done = JOBS.filter(j => state[j.id] && state[j.id].want).length;
+  document.getElementById("count").textContent = lang === "fa" ? faNum(done) + " " + t.of + " " + faNum(JOBS.length) + " " + t.sent : done + " " + t.of + " " + JOBS.length + " " + t.sent;
+}
+document.querySelectorAll(".langbar button").forEach(b => b.onclick = () => { lang = b.dataset.lang; save(); render(); });
+document.getElementById("copy").onclick = async (e) => {
+  const ta = document.getElementById("summary"); const btn = e.currentTarget;
+  try { await navigator.clipboard.writeText(ta.value); } catch (err) { ta.select(); try { document.execCommand("copy"); } catch (e2) {} }
+  btn.textContent = T[lang].copied; setTimeout(() => { btn.textContent = T[lang].copy; }, 1800);
+};
+render();
+</script>
+</body>
+</html>
